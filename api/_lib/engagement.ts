@@ -38,7 +38,15 @@ export async function listApprovedComments(db: Db, slug: string): Promise<unknow
 export async function createComment(db: Db, req: Req, slug: string): Promise<unknown> {
   const body = await readJsonBody(req);
   const parsed = parseComment(body);
-  if (!parsed.ok) throw new HttpError(422, 'validation', 'ফর্মে কিছু ত্রুটি আছে।', parsed.errors);
+  // if (!parsed.ok) throw new HttpError(422, 'validation', 'ফর্মে কিছু ত্রুটি আছে।', parsed.errors);
+  if (parsed.ok === false) {
+  throw new HttpError(
+    422,
+    'validation',
+    'ফর্মে কিছু ত্রুটি আছে।',
+    parsed.errors
+  );
+}
   await enforceLimit(db, `comment:ip:${getIp(req)}`, 5);
   const job = await findPublishedJobBySlug(db, slug);
 
@@ -64,7 +72,15 @@ export async function createComment(db: Db, req: Req, slug: string): Promise<unk
 export async function createContactMessage(db: Db, req: Req): Promise<unknown> {
   const body = await readJsonBody(req);
   const parsed = parseContact(body);
-  if (!parsed.ok) throw new HttpError(422, 'validation', 'ফর্মে কিছু ত্রুটি আছে।', parsed.errors);
+  // if (!parsed.ok) throw new HttpError(422, 'validation', 'ফর্মে কিছু ত্রুটি আছে।', parsed.errors);
+  if (parsed.ok === false) {
+  throw new HttpError(
+    422,
+    'validation',
+    'ফর্মে কিছু ত্রুটি আছে।',
+    parsed.errors
+  );
+}
   await enforceLimit(db, `contact:ip:${getIp(req)}`, 5);
 
   const message = 'ধন্যবাদ! আপনার বার্তা পাঠানো হয়েছে।';
@@ -109,7 +125,15 @@ export async function adminListComments(db: Db, url: URL): Promise<unknown> {
 export async function adminUpdateComment(db: Db, req: Req, id: string | undefined): Promise<unknown> {
   const objectId = toObjectId(id);
   const parsed = parseComment(await readJsonBody(req));
-  if (!parsed.ok) throw new HttpError(422, 'validation', 'ফর্মে কিছু ত্রুটি আছে।', parsed.errors);
+  // if (!parsed.ok) throw new HttpError(422, 'validation', 'ফর্মে কিছু ত্রুটি আছে।', parsed.errors);
+  if (parsed.ok === false) {
+  throw new HttpError(
+    422,
+    'validation',
+    'ফর্মে কিছু ত্রুটি আছে।',
+    parsed.errors
+  );
+}
   const updated = await col.comments(db).findOneAndUpdate(
     { _id: objectId },
     { $set: { name: parsed.value.name, comment: parsed.value.comment, updatedAt: new Date() } },

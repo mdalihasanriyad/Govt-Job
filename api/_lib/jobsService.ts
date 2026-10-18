@@ -59,7 +59,15 @@ async function parseBody(db: Db, req: Req): Promise<{ input: JobInput; categoryN
   const body = await readJsonBody(req);
   const categories = await loadCategories(db);
   const parsed = parseJobInput(body, categories.map((category) => category.slug));
-  if (!parsed.ok) throw new HttpError(422, 'validation', 'ফর্মে কিছু ত্রুটি আছে। অনুগ্রহ করে সংশোধন করুন।', parsed.errors);
+  // if (!parsed.ok) throw new HttpError(422, 'validation', 'ফর্মে কিছু ত্রুটি আছে। অনুগ্রহ করে সংশোধন করুন।', parsed.errors);
+  if (parsed.ok === false) {
+  throw new HttpError(
+    422,
+    'validation',
+    'ফর্মে কিছু ত্রুটি আছে। অনুগ্রহ করে সংশোধন করুন।',
+    parsed.errors
+  );
+}
   if (parsed.value.status === 'published') {
     const problem = checkPublishable(parsed.value);
     if (problem) throw new HttpError(422, 'validation', problem, { status: problem });
